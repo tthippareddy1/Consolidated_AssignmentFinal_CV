@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Vision Modules - Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Computer Vision Modules</h1>
+            <p class="subtitle">CSC 8830 - Fall 2025 | Complete Portfolio</p>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <div class="container">
+            <ul>
+                <li><a href="#modules">Modules</a></li>
+                <li><a href="#evaluation">Evaluation</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Introduction Section -->
+        <section id="intro" class="intro-section">
+            <h2>Welcome to My Computer Vision Portfolio</h2>
+            <p>This portfolio showcases seven comprehensive computer vision modules covering fundamental and advanced topics in image processing, feature detection, segmentation, and 3D vision. Each module is fully interactive and demonstrable through web interfaces.</p>
+        </section>
+
+        <!-- Modules Section -->
+        <section id="modules" class="modules-section">
+            <h2>Assignment Modules</h2>
+            
+            <!-- Assignment 1 -->
+            <div class="module-card">
+                <div class="module-header">
+                    <span class="module-number">01</span>
+                    <h3>Perspective Measurement</h3>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">
+                        Real-world distance and dimension measurement using perspective geometry. 
+                        Implements focal length calibration and validates measurements across different camera distances.
+                    </p>
+                    <div class="module-features">
+                        <span class="tag">Calibration</span>
+                        <span class="tag">Focal Length</span>
+                        <span class="tag">Distance Measurement</span>
+                    </div>
+                    <div class="module-links">
+                        <a href="assignment1/perspective_measurement/index.html" class="btn btn-primary">Launch Module</a>
+                        <a href="#video-1" class="btn btn-secondary">Demo Video</a>
+                    </div>
+                    <div id="video-1" class="video-container" style="display:none;">
+                        <p class="video-placeholder">📹 Demo video will be embedded here</p>
+                        <!-- Add your video embed code or link here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignment 2 -->
+            <div class="module-card">
+                <div class="module-header">
+                    <span class="module-number">02</span>
+                    <h3>Template Matching</h3>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">
+                        Multi-scale template matching for object detection in real-world scenes. 
+                        Implements both standard and robust matching methods with rotation handling.
+                    </p>
+                    <div class="module-features">
+                        <span class="tag">Object Detection</span>
+                        <span class="tag">Multi-Scale</span>
+                        <span class="tag">Rotation Invariant</span>
+                    </div>
+                    <div class="module-links">
+                        <a href="assignment2/index.html" class="btn btn-primary">Launch Module</a>
+                        <a href="#video-2" class="btn btn-secondary">Demo Video</a>
+                    </div>
+                    <div id="video-2" class="video-container" style="display:none;">
+                        <p class="video-placeholder">📹 Demo video will be embedded here</p>
+                        <!-- Add your video embed code or link here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignment 3 -->
+            <div class="module-card">
+                <div class="module-header">
+                    <span class="module-number">03</span>
+                    <h3>Image Analysis Suite</h3>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">
+                        Comprehensive image analysis toolkit including gradient computation, edge detection, 
+                        corner detection, boundary extraction, and ArUco marker detection.
+                    </p>
+                    <div class="module-features">
+                        <span class="tag">Gradients</span>
+                        <span class="tag">Edge Detection</span>
+                        <span class="tag">Corner Detection</span>
+                        <span class="tag">ArUco Markers</span>
+                    </div>
+                    <div class="module-links">
+                        <a href="assignment3/webapp/index.html" class="btn btn-primary">Launch Module</a>
+                        <a href="#video-3" class="btn btn-secondary">Demo Video</a>
+                    </div>
+                    <div id="video-3" class="video-container" style="display:none;">
+                        <p class="video-placeholder">📹 Demo video will be embedded here</p>
+                        <!-- Add your video embed code or link here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignment 4 -->
+            <div class="module-card">
+                <div class="module-header">
+                    <span class="module-number">04</span>
+                    <h3>Image Stitching & Panorama</h3>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">
+                        Automatic panorama generation from multiple overlapping images using feature matching 
+                        and homography estimation. Includes SIFT feature detection and matching.
+                    </p>
+                    <div class="module-features">
+                        <span class="tag">Panorama</span>
+                        <span class="tag">SIFT</span>
+                        <span class="tag">Feature Matching</span>
+                        <span class="tag">Homography</span>
+                    </div>
+                    <div class="module-links">
+                        <a href="assignment4/index.html" class="btn btn-primary">Launch Module</a>
+                        <a href="#video-4" class="btn btn-secondary">Demo Video</a>
+                    </div>
+                    <div id="video-4" class="video-container" style="display:none;">
+                        <p class="video-placeholder">📹 Demo video will be embedded here</p>
+                        <!-- Add your video embed code or link here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignment 5-6 -->
+            <div class="module-card">
+                <div class="module-header">
+                    <span class="module-number">05-06</span>
+                    <h3>SAM2 Segmentation & Tracking</h3>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">
+                        Advanced object segmentation and tracking using Segment Anything Model 2 (SAM2). 
+                        Interactive point-based segmentation with real-time tracking capabilities.
+                    </p>
+                    <div class="module-features">
+                        <span class="tag">Segmentation</span>
+                        <span class="tag">SAM2</span>
+                        <span class="tag">Object Tracking</span>
+                        <span class="tag">Interactive</span>
+                    </div>
+                    <div class="module-links">
+                        <a href="assignment5-6/index.html" class="btn btn-primary">Launch Module</a>
+                        <a href="#video-5" class="btn btn-secondary">Demo Video</a>
+                    </div>
+                    <div id="video-5" class="video-container" style="display:none;">
+                        <p class="video-placeholder">📹 Demo video will be embedded here</p>
+                        <!-- Add your video embed code or link here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignment 7 -->
+            <div class="module-card">
+                <div class="module-header">
+                    <span class="module-number">07</span>
+                    <h3>Stereo Vision & Pose Tracking</h3>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">
+                        3D measurement using stereo vision, depth estimation, and real-time hand/pose tracking. 
+                        Includes stereo calibration and disparity map computation.
+                    </p>
+                    <div class="module-features">
+                        <span class="tag">Stereo Vision</span>
+                        <span class="tag">3D Measurement</span>
+                        <span class="tag">Pose Tracking</span>
+                        <span class="tag">Hand Tracking</span>
+                    </div>
+                    <div class="module-links">
+                        <a href="assignment7/task1_stereo_measurement.html" class="btn btn-primary">Stereo Measurement</a>
+                        <a href="assignment7/task3_pose_hand_tracking.html" class="btn btn-primary">Pose Tracking</a>
+                        <a href="#video-7" class="btn btn-secondary">Demo Video</a>
+                    </div>
+                    <div id="video-7" class="video-container" style="display:none;">
+                        <p class="video-placeholder">📹 Demo video will be embedded here</p>
+                        <!-- Add your video embed code or link here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Evaluation Section -->
+        <section id="evaluation" class="evaluation-section">
+            <h2>Performance Evaluation</h2>
+            <p class="section-intro">
+                Comprehensive evaluation of <strong>[Selected Module/Feature]</strong> across 10 different variations 
+                including different objects, scenes, and lighting conditions.
+            </p>
+            
+            <div class="evaluation-card">
+                <h3>Evaluation Metric: [Metric Name]</h3>
+                <p class="metric-description">
+                    [Brief description of the chosen metric and why it's appropriate for this module]
+                </p>
+                
+                <div class="table-container">
+                    <table class="evaluation-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Test Case</th>
+                                <th>Description</th>
+                                <th>Metric Value</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Variation 1</td>
+                                <td>Description of test case 1</td>
+                                <td class="metric-value">-</td>
+                                <td>Notes</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Variation 2</td>
+                                <td>Description of test case 2</td>
+                                <td class="metric-value">-</td>
+                                <td>Notes</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Variation 3</td>
+                                <td>Description of test case 3</td>
+                                <td class="metric-value">-</td>
+                                <td>Notes</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Variation 4</td>
+                                <td>Description of test case 4</td>
+                                <td class="metric-value">-</td>
+                                <td>Notes</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Variation 5</td>
+                                <td>Description of test case 5</td>
+                                <td class="metric-value">-</td>
+                                <td>Notes</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>Variation 6</td>
+                                <td>Description of test case 6</td>
+                                <td class="metric-value">-</td>
+                                <td>Notes</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>Variation 7</td>
+                                <td>Description of test case 7</td>
+                                <td class="metric-value">-</td>
+                                <td>Notes</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>Variation 8</td>
+                                <td>Description of test case 8</td>
+                                <td class="metric-value">-</td>
+                                <td>Notes</td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>Variation 9</td>
+                                <td>Description of test case 9</td>
+                                <td class="metric-value">-</td>
+                                <td>Notes</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>Variation 10</td>
+                                <td>Description of test case 10</td>
+                                <td class="metric-value">-</td>
+                                <td>Notes</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3"><strong>Average</strong></td>
+                                <td class="metric-value"><strong>-</strong></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="evaluation-summary">
+                    <h4>Key Findings</h4>
+                    <ul>
+                        <li>[Finding 1 - e.g., "Performance is consistent across different lighting conditions"]</li>
+                        <li>[Finding 2 - e.g., "Accuracy decreases with object rotation beyond 45 degrees"]</li>
+                        <li>[Finding 3 - e.g., "Best results achieved with high-contrast scenes"]</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about-section">
+            <h2>About This Portfolio</h2>
+            <p>
+                This portfolio represents a comprehensive exploration of computer vision techniques and algorithms. 
+                Each module was developed with attention to both theoretical understanding and practical implementation, 
+                demonstrating proficiency in image processing, feature detection, object tracking, and 3D vision.
+            </p>
+            <div class="tech-stack">
+                <h3>Technologies Used</h3>
+                <div class="tech-tags">
+                    <span class="tech-tag">JavaScript</span>
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">OpenCV</span>
+                    <span class="tech-tag">WebAssembly</span>
+                    <span class="tech-tag">HTML5 Canvas</span>
+                    <span class="tech-tag">MediaPipe</span>
+                    <span class="tech-tag">SAM2</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 CSC 8830 Computer Vision | Fall 2025</p>
+            <p>All modules are fully functional and ready for demonstration</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

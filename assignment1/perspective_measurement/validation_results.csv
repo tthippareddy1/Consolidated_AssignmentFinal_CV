@@ -1,0 +1,6 @@
+units,f_px,f_source,calib_image,calib_distance,calib_size,test_image,test_distance,test_true_size,L_img_px_test,L_pred,percent_error
+cm,4405.408607609515,"self-cal from mc_20d_24mm_cube.jpg (D=20.0 cm, size=4.0 cm)",mc_20d_24mm_cube.jpg,20.0,4.0,mc_32d_24mm_cube.jpg,32.0,4.0,529.0765540070737,3.8431054270385254,3.9224
+cm,4426.1297992715945,"self-cal from mc_20d_24mm_cube.jpg (D=20.0 cm, size=4.0 cm)",mc_20d_24mm_cube.jpg,20.0,4.0,mc_12d_24mm_cube.jpg,12.0,4.0,1423.4553031268667,3.859232424754802,3.5192
+cm,4470.905948462794,"self-cal from mc_20d_24mm_cube.jpg (D=20.0 cm, size=4.0 cm)",mc_20d_24mm_cube.jpg,20.0,4.0,mc_12d_24mm_cube.jpg,12.0,4.0,1376.5812725734722,3.6947713643051006,7.6307
+cm,4415.407682196515,"self-cal from mc_20d_24mm_cube.jpg (D=20.0 cm, size=4.0 cm)",mc_20d_24mm_cube.jpg,20.0,4.0,mc_12d_24mm_cube.jpg,12.0,4.0,1387.900933064028,3.7719758616905636,5.7006
+cm,4445.340256943218,"self-cal from mc_20d_24mm_cube.jpg (D=20.0 cm, size=4.0 cm)",mc_20d_24mm_cube.jpg,20.0,4.0,mc_12d_24mm_cube.jpg,12.0,4.0,1391.898343989244,3.757368201856473,6.0658

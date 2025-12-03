@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 2 - Template Matching</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section h2 {
+            color: #2563eb;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 0.5rem;
+        }
+
+        .section h3 {
+            color: #1e40af;
+            font-size: 1.4rem;
+            margin: 1.5rem 0 1rem 0;
+        }
+
+        .section p {
+            line-height: 1.8;
+            color: #475569;
+            margin-bottom: 1rem;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .feature-card h4 {
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .result-item {
+            text-align: center;
+        }
+
+        .result-item img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .result-item h4 {
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
+
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .template-item {
+            text-align: center;
+        }
+
+        .template-item img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .template-item p {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+        }
+
+        .btn-secondary:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        .info-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        .info-box h4 {
+            color: #d97706;
+            margin-bottom: 0.5rem;
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">← Back to Main Portfolio</a>
+
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Template Matching</h1>
+            <p>Multi-scale Template Matching for Object Detection</p>
+        </div>
+
+        <div class="content">
+            <!-- Overview Section -->
+            <div class="section">
+                <h2>Overview</h2>
+                <p>
+                    This module implements advanced template matching for object detection in real-world scenes. 
+                    It uses correlation-based methods with multi-scale and rotation-invariant matching to detect 
+                    multiple objects simultaneously, even under different scales and orientations.
+                </p>
+            </div>
+
+            <!-- Features Section -->
+            <div class="section">
+                <h2>Key Features</h2>
+                <div class="features">
+                    <div class="feature-card">
+                        <h4>🎯 Multi-Template Detection</h4>
+                        <p>Detect multiple different objects in a single scene simultaneously.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📏 Multi-Scale Matching</h4>
+                        <p>Handles objects at different scales (0.5x to 1.8x) with configurable steps.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🔄 Rotation Invariant</h4>
+                        <p>Detects objects at various rotation angles (0°, 180°, or full range).</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🎨 Region Blurring</h4>
+                        <p>Automatically blurs detected regions with adjustable feathering.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🧠 NMS (Non-Maximum Suppression)</h4>
+                        <p>Removes duplicate detections for cleaner results.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>⚡ Optimized Performance</h4>
+                        <p>Downscaling options for fast processing on large images.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs for different tasks -->
+            <div class="section">
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('results')">Results</button>
+                    <button class="tab" onclick="showTab('templates')">Templates</button>
+                    <button class="tab" onclick="showTab('webapp')">Web App</button>
+                </div>
+
+                <!-- Results Tab -->
+                <div id="results" class="tab-content active">
+                    <h3>Detection Results</h3>
+                    <p>Example outputs from the template matching algorithm showing detected objects with bounding boxes and confidence scores.</p>
+                    
+                    <div class="results-grid">
+                        <div class="result-item">
+                            <img src="out/card_annotated.png" alt="Detection Results" onerror="this.parentElement.innerHTML='<p style=color:#94a3b8>Result images will appear here after running detection</p>'">
+                            <h4>Annotated Detection</h4>
+                            <p>Objects detected with bounding boxes and labels</p>
+                        </div>
+                        <div class="result-item">
+                            <img src="ignore/multi_match_result.png" alt="Multi-object Detection" onerror="this.parentElement.innerHTML='<p style=color:#94a3b8>Multi-detection results will appear here</p>'">
+                            <h4>Multi-Object Detection</h4>
+                            <p>Multiple templates detected simultaneously</p>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>📊 Detection Statistics</h4>
+                        <p>The algorithm tests multiple scales and rotations for each template, using normalized correlation 
+                        coefficients to find the best matches. Typical confidence scores range from 0.60 to 0.95, with 
+                        higher scores indicating stronger matches.</p>
+                    </div>
+                </div>
+
+                <!-- Templates Tab -->
+                <div id="templates" class="tab-content">
+                    <h3>Template Images</h3>
+                    <p>Below are the template images used for object detection. Each template is matched against the scene at multiple scales and rotations.</p>
+                    
+                    <div class="templates-grid">
+                        <div class="template-item">
+                            <img src="templates/bot1.JPG" alt="Template: Bottle 1" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23e2e8f0%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%2364748b%22%3ETemplate%3C/text%3E%3C/svg%3E'">
+                            <p>Bottle</p>
+                        </div>
+                        <div class="template-item">
+                            <img src="templates/c.JPG" alt="Template: Card" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23e2e8f0%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%2364748b%22%3ETemplate%3C/text%3E%3C/svg%3E'">
+                            <p>Card</p>
+                        </div>
+                        <div class="template-item">
+                            <img src="templates/ket.JPG" alt="Template: Kettle" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23e2e8f0%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%2364748b%22%3ETemplate%3C/text%3E%3C/svg%3E'">
+                            <p>Kettle</p>
+                        </div>
+                        <div class="template-item">
+                            <img src="templates/water.JPG" alt="Template: Water Bottle" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23e2e8f0%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%2364748b%22%3ETemplate%3C/text%3E%3C/svg%3E'">
+                            <p>Water Bottle</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Web App Tab -->
+                <div id="webapp" class="tab-content">
+                    <h3>Interactive Web Application</h3>
+                    <p>
+                        This assignment includes a Streamlit-based web application that provides an interactive interface 
+                        for template matching with real-time parameter adjustment and region blurring capabilities.
+                    </p>
+
+                    <h3>🚀 How to Run</h3>
+                    <div class="code-block">
+# Navigate to assignment2 directory<br>
+cd assignment2<br><br>
+# Install dependencies<br>
+pip install -r requirements.txt<br><br>
+# Run the Streamlit app<br>
+streamlit run app.py<br><br>
+# Open browser at http://localhost:8501
+                    </div>
+
+                    <h3>✨ Application Features</h3>
+                    <div class="features">
+                        <div class="feature-card">
+                            <h4>📤 File Upload</h4>
+                            <p>Upload scene images directly through the browser interface.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>⚙️ Configurable Parameters</h4>
+                            <p>Adjust scale range, rotation angles, confidence thresholds in real-time.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>🎛️ Multiple Methods</h4>
+                            <p>Choose between TM_CCOEFF_NORMED, TM_CCORR_NORMED, TM_SQDIFF_NORMED.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>💾 Download Results</h4>
+                            <p>Download annotated and blurred images as PNG files.</p>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>💡 Note</h4>
+                        <p>
+                            The web application requires Python and Streamlit to be installed. Make sure you have all 
+                            template images in the <code>templates/</code> folder before running the app.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Details -->
+            <div class="section">
+                <h2>Technical Implementation</h2>
+                <h3>Algorithm Overview</h3>
+                <p><strong>1. Template Matching Method:</strong> Uses OpenCV's <code>matchTemplate()</code> with normalized 
+                correlation coefficient (TM_CCOEFF_NORMED) for robust matching under varying lighting conditions.</p>
+                
+                <p><strong>2. Multi-Scale Search:</strong> Tests templates at 19-21 different scales ranging from 0.5x to 1.8x 
+                to handle objects at varying distances.</p>
+                
+                <p><strong>3. Rotation Handling:</strong> Rotates templates by 0°, 180°, or full range (-45° to +45°) to 
+                detect objects in different orientations.</p>
+                
+                <p><strong>4. Non-Maximum Suppression:</strong> Applies NMS with configurable IoU threshold (default 0.3) to 
+                remove duplicate detections and keep only the strongest matches.</p>
+                
+                <p><strong>5. Region Blurring:</strong> Uses Gaussian blur with feathering to smoothly blur detected regions 
+                while maintaining natural-looking boundaries.</p>
+
+                <h3>Performance Optimizations</h3>
+                <ul style="color: #475569; line-height: 2;">
+                    <li>Downscaling: Processes images at reduced resolution (max 1200px) for speed, then scales detections back</li>
+                    <li>Grayscale Processing: Converts to grayscale to reduce computational complexity</li>
+                    <li>Gaussian Preprocessing: Applies slight blur (3x3 kernel) to reduce noise</li>
+                    <li>Early Termination: Skips scales where template exceeds scene dimensions</li>
+                </ul>
+            </div>
+
+            <!-- Links -->
+            <div class="section">
+                <h2>Resources</h2>
+                <div class="button-group">
+                    <a href="README.md" class="btn btn-primary" target="_blank">📖 Read Documentation</a>
+                    <a href="app.py" class="btn btn-secondary" target="_blank">💻 View Source Code</a>
+                    <a href="../index.html" class="btn btn-secondary">🏠 Back to Portfolio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Mark clicked tab as active
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

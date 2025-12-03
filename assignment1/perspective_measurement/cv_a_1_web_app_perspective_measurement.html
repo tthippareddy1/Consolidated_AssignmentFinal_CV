@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Perspective Projection – Real‑World Measurement</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body { height: 100%; }
+    .btn { @apply px-3 py-2 rounded-xl shadow text-sm font-medium; }
+    .btn-primary { @apply bg-blue-600 text-white hover:bg-blue-700; }
+    .btn-ghost { @apply bg-white border border-gray-300 hover:bg-gray-50; }
+    .card { @apply bg-white rounded-2xl shadow p-4; }
+    .label { @apply block text-xs uppercase tracking-wide text-gray-600 mb-1; }
+    .field { @apply w-full border rounded-xl px-3 py-2; }
+    canvas { background: #111; border-radius: 16px; }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+  <header class="max-w-6xl mx-auto px-4 py-6">
+    <h1 class="text-2xl font-semibold">Perspective Projection – Real‑World Measurement</h1>
+    <p class="text-gray-600">CSc 8830 • Assignment 1 • Browser‑based application (OS agnostic)</p>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-6 pb-16">
+    <!-- Controls -->
+    <section class="lg:col-span-1 space-y-4">
+      <div class="card space-y-3">
+        <h2 class="font-semibold">1) Source</h2>
+        <div class="flex gap-2">
+          <button id="btnWebcam" class="btn btn-primary">Start Webcam</button>
+          <button id="btnCapture" class="btn btn-ghost" disabled>Capture Frame</button>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="fileInput" type="file" accept="image/*" class="hidden" />
+          <button id="btnUpload" class="btn btn-ghost">Upload Image</button>
+          <span id="srcName" class="text-xs text-gray-500"></span>
+        </div>
+        <p class="text-xs text-gray-500">Tip: Webcam works over <b>https</b> or <b>localhost</b>. If it fails, use Upload Image.</p>
+      </div>
+
+      <div class="card space-y-3">
+        <h2 class="font-semibold">2) Mode & Points</h2>
+        <div class="flex gap-2">
+          <button id="tabCalib" class="btn btn-primary">Calibration</button>
+          <button id="tabMeasure" class="btn btn-ghost">Measurement</button>
+        </div>
+        <div class="text-sm text-gray-600">
+          <p><b>How:</b> Click exactly <b>two</b> points along the object's dimension (e.g., two cube corners).</p>
+        </div>
+        <div class="flex gap-2">
+          <button id="btnUndo" class="btn btn-ghost">Undo</button>
+          <button id="btnClear" class="btn btn-ghost">Clear Points</button>
+        </div>
+        <div class="text-xs text-gray-500" id="pointsInfo">0 / 2 points selected.</div>
+      </div>
+
+      <div class="card space-y-3" id="calibPanel">
+        <h2 class="font-semibold">3) Calibration (self‑cal)</h2>
+        <label class="label" for="calibDistance">Distance D<sub>calib</sub> (to object plane)</label>
+        <input id="calibDistance" type="number" step="0.001" class="field" placeholder="e.g., 20" />
+        <label class="label" for="calibSize">Known size L<sub>ref</sub></label>
+        <input id="calibSize" type="number" step="0.001" class="field" placeholder="e.g., 4" />
+        <label class="label" for="units">Units</label>
+        <select id="units" class="field">
+          <option value="cm" selected>cm</option>
+          <option value="mm">mm</option>
+          <option value="in">in</option>
+        </select>
+        <button id="btnCalibrate" class="btn btn-primary w-full">Calibrate f<sub>px</sub></button>
+        <div class="text-sm text-gray-700">f<sub>px</sub>: <span id="fpxOut" class="font-mono">—</span></div>
+        <div class="text-xs text-gray-500">(Saved to browser storage; persists across reloads)</div>
+      </div>
+
+      <div class="card space-y-3 hidden" id="measurePanel">
+        <h2 class="font-semibold">4) Measurement</h2>
+        <label class="label" for="testDistance">Distance D<sub>test</sub></label>
+        <input id="testDistance" type="number" step="0.001" class="field" placeholder="e.g., 32" />
+
+        <label class="label" for="truthSize">Truth size (optional, for % error)</label>
+        <input id="truthSize" type="number" step="0.001" class="field" placeholder="e.g., 4" />
+
+        <label class="label" for="manualFpx">f<sub>px</sub> (optional override)</label>
+        <input id="manualFpx" type="number" step="0.001" class="field" placeholder="leave blank to use calibrated value" />
+
+        <button id="btnMeasure" class="btn btn-primary w-full">Compute Size</button>
+        <div class="text-sm text-gray-700">Predicted size L: <span id="predOut" class="font-mono">—</span></div>
+        <div class="text-sm text-gray-700">% Error: <span id="errOut" class="font-mono">—</span></div>
+      </div>
+
+      <div class="card space-y-3">
+        <h2 class="font-semibold">5) Export</h2>
+        <button id="btnSavePNG" class="btn btn-ghost w-full">Save Annotated PNG</button>
+        <button id="btnResetFpx" class="btn btn-ghost w-full">Reset f<sub>px</sub></button>
+      </div>
+    </section>
+
+    <!-- Canvas / Preview -->
+    <section class="lg:col-span-2">
+      <div class="card">
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-sm text-gray-600">Click to add points • Green line is your measurement</div>
+          <div class="text-xs text-gray-500">Image size: <span id="imgInfo">—</span></div>
+        </div>
+        <div class="relative">
+          <video id="video" autoplay playsinline class="hidden"></video>
+          <canvas id="canvas" width="960" height="600" class="w-full"></canvas>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  // --------------------- State ---------------------
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const video = document.getElementById('video');
+
+  let sourceImg = null;        // HTMLImageElement or ImageBitmap from video frame
+  let sourceW = 0, sourceH = 0;// natural/source size
+  let drawX = 0, drawY = 0;    // top-left draw offset in canvas
+  let drawW = 0, drawH = 0;    // drawn size in canvas
+  let scale = 1;               // scale = drawW / sourceW (uniform)
+
+  let mode = 'calib';          // 'calib' | 'measure'
+  let calibPts = [];           // [[x,y],[x,y]] in canvas coords
+  let measurePts = [];
+
+  const els = {
+    btnWebcam: document.getElementById('btnWebcam'),
+    btnCapture: document.getElementById('btnCapture'),
+    btnUpload: document.getElementById('btnUpload'),
+    fileInput: document.getElementById('fileInput'),
+    srcName: document.getElementById('srcName'),
+    tabCalib: document.getElementById('tabCalib'),
+    tabMeasure: document.getElementById('tabMeasure'),
+    calibPanel: document.getElementById('calibPanel'),
+    measurePanel: document.getElementById('measurePanel'),
+    btnUndo: document.getElementById('btnUndo'),
+    btnClear: document.getElementById('btnClear'),
+    pointsInfo: document.getElementById('pointsInfo'),
+    calibDistance: document.getElementById('calibDistance'),
+    calibSize: document.getElementById('calibSize'),
+    units: document.getElementById('units'),
+    btnCalibrate: document.getElementById('btnCalibrate'),
+    fpxOut: document.getElementById('fpxOut'),
+    testDistance: document.getElementById('testDistance'),
+    truthSize: document.getElementById('truthSize'),
+    manualFpx: document.getElementById('manualFpx'),
+    btnMeasure: document.getElementById('btnMeasure'),
+    predOut: document.getElementById('predOut'),
+    errOut: document.getElementById('errOut'),
+    btnSavePNG: document.getElementById('btnSavePNG'),
+    btnResetFpx: document.getElementById('btnResetFpx'),
+    imgInfo: document.getElementById('imgInfo'),
+  };
+
+  // Load stored f_px
+  let fpxStored = localStorage.getItem('fpx');
+  if (fpxStored) els.fpxOut.textContent = parseFloat(fpxStored).toFixed(3) + ' px';
+
+  // --------------------- Helpers ---------------------
+  function fitToCanvas() {
+    if (!sourceImg) return;
+    const cw = canvas.width, ch = canvas.height;
+    const arImg = sourceW / sourceH; const arCanvas = cw / ch;
+    if (arImg > arCanvas) {
+      drawW = cw; drawH = Math.round(cw / arImg);
+      drawX = 0; drawY = Math.round((ch - drawH)/2);
+    } else {
+      drawH = ch; drawW = Math.round(ch * arImg);
+      drawY = 0; drawX = Math.round((cw - drawW)/2);
+    }
+    scale = drawW / sourceW;
+  }
+
+  function clearPoints(which) {
+    if (!which || which==='calib') calibPts = [];
+    if (!which || which==='measure') measurePts = [];
+    updatePointsInfo(); draw();
+  }
+
+  function updatePointsInfo() {
+    const arr = (mode==='calib') ? calibPts : measurePts;
+    els.pointsInfo.textContent = `${arr.length} / 2 points selected.`;
+  }
+
+  function pxDistanceOriginal(pts) {
+    if (pts.length !== 2) return null;
+    const [a,b] = pts;
+    // convert canvas coords -> source coords (undo letterboxing & scaling)
+    const ax = (a[0]-drawX) / scale, ay = (a[1]-drawY) / scale;
+    const bx = (b[0]-drawX) / scale, by = (b[1]-drawY) / scale;
+    return Math.hypot(ax-bx, ay-by);
+  }
+
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if (sourceImg) {
+      ctx.drawImage(sourceImg, 0,0, sourceW,sourceH, drawX,drawY, drawW,drawH);
+    } else {
+      // placeholder grid
+      ctx.fillStyle = '#0b0b0b'; ctx.fillRect(0,0,canvas.width,canvas.height);
+      for (let i=0;i<canvas.width;i+=40){ ctx.fillStyle = '#141414'; ctx.fillRect(i,0,1,canvas.height);} 
+      for (let j=0;j<canvas.height;j+=40){ ctx.fillStyle = '#141414'; ctx.fillRect(0,j,canvas.width,1);} 
+    }
+    // draw points/line
+    const pts = (mode==='calib') ? calibPts : measurePts;
+    ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 3; ctx.fillStyle = '#22c55e';
+    if (pts[0]) { ctx.beginPath(); ctx.arc(pts[0][0], pts[0][1], 5, 0, Math.PI*2); ctx.fill(); }
+    if (pts[1]) { ctx.beginPath(); ctx.arc(pts[1][0], pts[1][1], 5, 0, Math.PI*2); ctx.fill(); }
+    if (pts.length === 2) {
+      ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); ctx.lineTo(pts[1][0], pts[1][1]); ctx.stroke();
+      const d = pxDistanceOriginal(pts);
+      if (d) {
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        const midx = (pts[0][0]+pts[1][0])/2, midy=(pts[0][1]+pts[1][1])/2;
+        const text = `${d.toFixed(2)} px`;
+        ctx.fillRect(midx-40, midy-24, 80, 20);
+        ctx.fillStyle = '#fff'; ctx.font = '12px ui-sans-serif'; ctx.fillText(text, midx-35, midy-10);
+      }
+    }
+    els.imgInfo.textContent = sourceW && sourceH ? `${sourceW}×${sourceH}` : '—';
+  }
+
+  function setMode(m) {
+    mode = m;
+    els.tabCalib.className = 'btn ' + (m==='calib' ? 'btn-primary' : 'btn-ghost');
+    els.tabMeasure.className = 'btn ' + (m==='measure' ? 'btn-primary' : 'btn-ghost');
+    els.calibPanel.classList.toggle('hidden', m!=='calib');
+    els.measurePanel.classList.toggle('hidden', m!=='measure');
+    updatePointsInfo(); draw();
+  }
+
+  // --------------------- Event wiring ---------------------
+  // Resize canvas to container width responsively
+  function resizeCanvasToContainer() {
+    const rect = canvas.getBoundingClientRect();
+    const targetW = Math.max(720, Math.round(rect.width));
+    const targetH = Math.round(targetW * 0.625); // 16:10-ish
+    const storeImg = sourceImg;
+    canvas.width = targetW; canvas.height = targetH;
+    if (storeImg) { fitToCanvas(); draw(); }
+  }
+  window.addEventListener('resize', resizeCanvasToContainer);
+  resizeCanvasToContainer();
+
+  canvas.addEventListener('click', (e)=>{
+    if (!sourceImg) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    const arr = (mode==='calib') ? calibPts : measurePts;
+    if (arr.length < 2) arr.push([x,y]);
+    updatePointsInfo(); draw();
+  });
+
+  els.btnUndo.addEventListener('click', ()=>{
+    const arr = (mode==='calib') ? calibPts : measurePts;
+    arr.pop(); updatePointsInfo(); draw();
+  });
+  els.btnClear.addEventListener('click', ()=> clearPoints(mode));
+
+  // Tabs
+  els.tabCalib.addEventListener('click', ()=> setMode('calib'));
+  els.tabMeasure.addEventListener('click', ()=> setMode('measure'));
+
+  // Upload Image
+  els.btnUpload.addEventListener('click', ()=> els.fileInput.click());
+  els.fileInput.addEventListener('change', async (ev)=>{
+    const file = ev.target.files[0]; if (!file) return;
+    els.srcName.textContent = file.name;
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = ()=>{
+      sourceImg = img; sourceW = img.naturalWidth; sourceH = img.naturalHeight;
+      fitToCanvas(); clearPoints(); draw();
+    };
+    img.src = url;
+  });
+
+  // Webcam
+  let stream = null;
+  els.btnWebcam.addEventListener('click', async ()=>{
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      video.srcObject = stream;
+      video.classList.remove('hidden');
+      els.btnCapture.disabled = false;
+      // draw a live preview into canvas for UX
+      const raf = ()=>{
+        if (!stream) return;
+        const vw = video.videoWidth, vh = video.videoHeight;
+        if (vw && vh) {
+          // draw video directly sized to canvas
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        }
+        requestAnimationFrame(raf);
+      };
+      requestAnimationFrame(raf);
+    } catch (e) {
+      alert('Webcam error: ' + e.message + '\nUse Upload Image instead.');
+    }
+  });
+
+  els.btnCapture.addEventListener('click', async ()=>{
+    if (!video.srcObject) return;
+    // Freeze current frame into an ImageBitmap at native resolution
+    const off = document.createElement('canvas');
+    off.width = video.videoWidth; off.height = video.videoHeight;
+    off.getContext('2d').drawImage(video, 0,0);
+    const bmp = await createImageBitmap(off);
+    sourceImg = bmp; sourceW = bmp.width; sourceH = bmp.height;
+    fitToCanvas(); clearPoints(); draw();
+  });
+
+  // Calibration
+  els.btnCalibrate.addEventListener('click', ()=>{
+    if (!sourceImg) { alert('Load or capture an image first.'); return; }
+    if (calibPts.length !== 2) { alert('Select exactly TWO points for calibration.'); return; }
+    const D = parseFloat(els.calibDistance.value);
+    const L = parseFloat(els.calibSize.value);
+    if (!(D>0) || !(L>0)) { alert('Enter positive numbers for D and known size.'); return; }
+    const Lpx = pxDistanceOriginal(calibPts);
+    if (!Lpx) { alert('Could not compute pixel length.'); return; }
+    const fpx = (Lpx * D) / L; // pinhole self-cal
+    localStorage.setItem('fpx', String(fpx));
+    els.fpxOut.textContent = fpx.toFixed(3) + ' px';
+    alert(`Calibrated f_px = ${fpx.toFixed(3)} px (saved)`);
+  });
+
+  // Measurement
+  els.btnMeasure.addEventListener('click', ()=>{
+    if (!sourceImg) { alert('Load or capture an image first.'); return; }
+    if (measurePts.length !== 2) { alert('Select exactly TWO points for measurement.'); return; }
+    const D = parseFloat(els.testDistance.value);
+    if (!(D>0)) { alert('Enter a positive D_test.'); return; }
+    const Lpx = pxDistanceOriginal(measurePts);
+    if (!Lpx) { alert('Could not compute pixel length.'); return; }
+    let fpx = parseFloat(els.manualFpx.value);
+    if (!(fpx>0)) { const s = localStorage.getItem('fpx'); if (!s) { alert('Calibrate first or enter f_px manually.'); return; } fpx = parseFloat(s); }
+    const L = (Lpx * D) / fpx;
+    els.predOut.textContent = `${L.toFixed(3)} ${els.units.value}`;
+    const truth = parseFloat(els.truthSize.value);
+    if (truth>0) {
+      const err = Math.abs(L - truth)/truth*100;
+      els.errOut.textContent = `${err.toFixed(3)} %`;
+    } else {
+      els.errOut.textContent = '—';
+    }
+  });
+
+  els.btnSavePNG.addEventListener('click', ()=>{
+    if (!sourceImg) { alert('Nothing to save.'); return; }
+    // Redraw once to ensure overlays are visible
+    draw();
+    const a = document.createElement('a');
+    a.download = 'measurement_annotated.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  });
+
+  els.btnResetFpx.addEventListener('click', ()=>{
+    localStorage.removeItem('fpx');
+    els.fpxOut.textContent = '—';
+    els.manualFpx.value = '';
+  });
+
+  // Default to Calibration mode
+  setMode('calib');
+  </script>
+</body>
+</html>
