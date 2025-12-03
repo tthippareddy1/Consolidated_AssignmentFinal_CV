@@ -238,6 +238,18 @@ section h2 {
     color: white;
 }
 
+.btn-github {
+    background-color: #24292e;
+    color: white;
+    border: 2px solid #24292e;
+}
+
+.btn-github:hover {
+    background-color: #1a1e22;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
 /* Video Container */
 .video-container {
     margin-top: 1.5rem;
